@@ -1,10 +1,13 @@
 import React from 'react';
+import EventListItem from './EventListItem';
 
 const EventList = () => {
   return (
-    <div>
-      <h1>EventList</h1>
-    </div>
+    <>
+      <EventListItem />
+      <EventListItem />
+      <EventListItem />
+    </>
   );
 };
 
