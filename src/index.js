@@ -1,15 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import App from './app/layout/App';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const rootEl = document.getElementById('root');
+
+function render() {
+  ReactDOM.render(<App />, rootEl);
+}
+
+if (module.hot) {
+  module.hot.accept('./app/layout/App', function () {
+    setTimeout(render);
+  });
+}
+
+render();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
