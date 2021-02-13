@@ -3,11 +3,17 @@ import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 import App from './app/layout/App';
 import 'semantic-ui-css/semantic.min.css';
+import { BrowserRouter } from 'react-router-dom';
 
 const rootEl = document.getElementById('root');
 
 function render() {
-  ReactDOM.render(<App />, rootEl);
+  ReactDOM.render(
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>,
+    rootEl,
+  );
 }
 
 if (module.hot) {
@@ -17,6 +23,13 @@ if (module.hot) {
 }
 
 render();
+
+/*ReactDOM.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  document.getElementById('root'),
+);*/
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
