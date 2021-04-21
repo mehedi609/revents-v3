@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 // import { eventReducer } from '../../features/events/eventSlice';
 import { testReducer } from '../../features/sandbox/testReducer';
 import { eventReducer } from '../../features/events/eventReducer';
+import { modalReducer } from '../common/modals/modalReducer';
 
 // import rootReducer from './reducers'
 
@@ -10,5 +11,6 @@ export const store = configureStore({
   reducer: {
     test: testReducer,
     event: eventReducer,
+    modals: modalReducer,
   },
 });
