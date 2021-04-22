@@ -1,26 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Grid } from 'semantic-ui-react';
 import EventList from '../event-list/EventList';
 import { useDispatch, useSelector } from 'react-redux';
 import EventListItemPlaceholder from './EventListItemPlaceholder';
 import EventFilters from './EventFilters';
-import {
-  dataFromSnapshot,
-  getEventsFromFirestore,
-} from '../../../app/firestore/firestoreService';
+import { listenToEventsFromFirestore } from '../../../app/firestore/firestoreService';
 import { listenToEvents } from '../eventActions';
-import {
-  asyncActionError,
-  asyncActionFinish,
-  asyncActionStart,
-} from '../../../app/async/asyncReducer';
+import { useFirestoreCollection } from '../../../app/hooks/useFirestoreCollection';
 
 const EventDashboard = () => {
   const { events } = useSelector((state) => state.event);
   const { loading } = useSelector((state) => state.async);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  /*useEffect(() => {
     dispatch(asyncActionStart());
     const unsubscribe = getEventsFromFirestore({
       next: (snapshot) => {
@@ -36,7 +29,13 @@ const EventDashboard = () => {
       },
     });
     return unsubscribe;
-  }, [dispatch]);
+  }, [dispatch]);*/
+
+  useFirestoreCollection({
+    query: () => listenToEventsFromFirestore(),
+    data: (events) => dispatch(listenToEvents(events)),
+    deps: [dispatch],
+  });
 
   return (
     <>
