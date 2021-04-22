@@ -1,19 +1,25 @@
 /* global google */
 import React from 'react';
 import { Button, Header, Segment } from 'semantic-ui-react';
-import cuid from 'cuid';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-// import { createEvent, updateEvent } from '../eventSlice';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import MyTextInput from '../../../app/common/form/MyTextInput';
 import MyTextArea from '../../../app/common/form/MyTextArea';
 import MySelectInput from '../../../app/common/form/MySelectInput';
 import { categoryData } from '../../../api/CategoryOptions';
-import { createEvent, updateEvent } from '../eventActions';
+import { listenToEvents } from '../eventActions';
 import MyDateInput from '../../../app/common/form/MyDateInput';
 import MyPlaceInput from '../../../app/common/form/MyPlaceInput';
+import { useFirestoreDoc } from '../../../app/hooks/useFirestoreDoc';
+import {
+  addEventToFirestore,
+  listenToEventFromFirestore,
+  updateEventInFirestore,
+} from '../../../app/firestore/firestoreService';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { toast } from 'react-toastify';
 
 const ValidationSchema = Yup.object().shape({
   title: Yup.string().required('You must provide a title'),
@@ -32,6 +38,7 @@ const EventForm = ({ match, history }) => {
   const selectedEvent = useSelector((state) =>
     state.event.events.find((evt) => evt.id === match.params.id),
   );
+  const { loading, error } = useSelector((state) => state.async);
   const dispatch = useDispatch();
 
   const initialValues = selectedEvent ?? {
@@ -49,20 +56,29 @@ const EventForm = ({ match, history }) => {
     title: '',
   };
 
-  const handleFormSubmit = (values) => {
-    selectedEvent
-      ? dispatch(updateEvent({ ...selectedEvent, ...values }))
-      : dispatch(
-          createEvent({
-            ...values,
-            id: cuid(),
-            hostedBy: 'Mehedi',
-            attendees: [],
-            hostPhotoURL: '/assets/user.png',
-          }),
-        );
+  useFirestoreDoc({
+    shouldExecute: !!match.params.id,
+    query: () => listenToEventFromFirestore(match.params.id),
+    data: (event) => dispatch(listenToEvents([event])),
+    deps: [match.params.id, dispatch],
+  });
 
-    history.push('/events');
+  if (loading) return <LoadingComponent content="Loading Event...." />;
+
+  if (error) return <Redirect to="/error" />;
+
+  const handleFormSubmit = async (values, setSubmitting) => {
+    try {
+      selectedEvent
+        ? await updateEventInFirestore(values)
+        : await addEventToFirestore(values);
+      setSubmitting(false);
+
+      history.push('/events');
+    } catch (e) {
+      toast.error(e.message);
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -71,7 +87,9 @@ const EventForm = ({ match, history }) => {
         <Formik
           initialValues={initialValues}
           validationSchema={ValidationSchema}
-          onSubmit={(values) => handleFormSubmit(values)}
+          onSubmit={(values, { setSubmitting }) =>
+            handleFormSubmit(values, setSubmitting)
+          }
         >
           {({ isSubmitting, dirty, isValid, values }) => (
             <Form className="ui form ">
