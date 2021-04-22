@@ -23,7 +23,8 @@
     "web-vitals": "^1.1.0",
     "yup": "^0.32.9",
     "react-places-autocomplete": "^7.3.0",
-    "google-map-react": "^2.1.9"
+    "google-map-react": "^2.1.9",
+    "redux-devtools-extension": "^2.13.9"
   },
   "devDependencies": {
     "prettier": "^2.2.1"

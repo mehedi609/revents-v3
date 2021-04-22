@@ -1,18 +1,10 @@
-import { configureStore } from '@reduxjs/toolkit';
-// import { testReducer } from '../../features/sandbox/testSlice';
-// import { eventReducer } from '../../features/events/eventSlice';
-import { testReducer } from '../../features/sandbox/testReducer';
-import { eventReducer } from '../../features/events/eventReducer';
-import { modalReducer } from '../common/modals/modalReducer';
-import { authReducer } from '../../features/auth/authReducer';
+import { applyMiddleware, createStore } from 'redux';
+import { rootReducer } from './rootReducer';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
 
-// import rootReducer from './reducers'
+const configureStore = () => {
+  return createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
+};
 
-export const store = configureStore({
-  reducer: {
-    test: testReducer,
-    event: eventReducer,
-    modals: modalReducer,
-    auth: authReducer,
-  },
-});
+export const store = configureStore();
