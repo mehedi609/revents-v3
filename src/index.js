@@ -2,11 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 import App from './app/layout/App';
-import 'semantic-ui-css/semantic.min.css';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store/configureStore';
 import ScrollToTop from './app/layout/ScrollToTop';
+
+import 'semantic-ui-css/semantic.css';
+import './app/layout/styles.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { loadEvents } from './features/events/eventActions';
+
+store.dispatch(loadEvents());
 
 const rootEl = document.getElementById('root');
 
