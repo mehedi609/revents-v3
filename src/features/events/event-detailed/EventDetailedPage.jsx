@@ -4,12 +4,33 @@ import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useFirestoreDoc } from '../../../app/hooks/useFirestoreDoc';
+import { listenToEvnetFromFirestore } from '../../../app/firestore/firestoreService';
+import { listenToEvents } from '../eventActions';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { Redirect } from 'react-router-dom';
 
 const EventDetailedPage = ({ match }) => {
   const event = useSelector((state) =>
     state.event.events.find((evt) => evt.id === match.params.id),
   );
+
+  const { loading, error } = useSelector((state) => state.async);
+
+  const dispatch = useDispatch();
+
+  useFirestoreDoc({
+    query: () => listenToEvnetFromFirestore(match.params.id),
+    data: (event) => dispatch(listenToEvents([event])),
+    deps: [match.params.id, dispatch],
+  });
+
+  if (loading || (!event && !error))
+    return <LoadingComponent content="Loading Event...." />;
+
+  if (error) return <Redirect to="/error" />;
+
   return (
     <Grid>
       <Grid.Column width={10}>
@@ -19,7 +40,7 @@ const EventDetailedPage = ({ match }) => {
       </Grid.Column>
 
       <Grid.Column width={6}>
-        <EventDetailedSidebar attendees={event.attendees} />
+        <EventDetailedSidebar attendees={event?.attendees} />
       </Grid.Column>
     </Grid>
   );
