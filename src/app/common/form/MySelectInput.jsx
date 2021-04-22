@@ -1,6 +1,7 @@
 import React from 'react';
 import { useField } from 'formik';
 import { FormField, Select } from 'semantic-ui-react';
+import FormErrorMessage from './FormErrorMessage';
 
 const MySelectInput = ({ label, ...props }) => {
   const [field, meta, helpers] = useField(props);
@@ -15,9 +16,7 @@ const MySelectInput = ({ label, ...props }) => {
         {...props}
       />
 
-      {meta.touched && meta.error && (
-        <div style={{ color: '#db2828', marginTop: '5px' }}>*{meta.error}</div>
-      )}
+      {meta.touched && meta.error && <FormErrorMessage errorMsg={meta.error} />}
     </FormField>
   );
 };

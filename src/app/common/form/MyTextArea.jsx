@@ -1,6 +1,7 @@
 import React from 'react';
 import { useField } from 'formik';
 import { FormField } from 'semantic-ui-react';
+import FormErrorMessage from './FormErrorMessage';
 
 const MyTextArea = ({ label, ...props }) => {
   const [field, meta] = useField(props);
@@ -9,9 +10,7 @@ const MyTextArea = ({ label, ...props }) => {
       <label>{label}</label>
       <textarea {...field} {...props} />
 
-      {meta.touched && meta.error && (
-        <div style={{ color: '#db2828', marginTop: '5px' }}>*{meta.error}</div>
-      )}
+      {meta.touched && meta.error && <FormErrorMessage errorMsg={meta.error} />}
     </FormField>
   );
 };

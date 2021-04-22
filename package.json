@@ -21,7 +21,9 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
     "web-vitals": "^1.1.0",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "react-places-autocomplete": "^7.3.0",
+    "google-map-react": "^2.1.9"
   },
   "devDependencies": {
     "prettier": "^2.2.1"

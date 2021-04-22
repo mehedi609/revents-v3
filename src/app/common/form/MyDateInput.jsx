@@ -3,6 +3,7 @@ import { useField, useFormikContext } from 'formik';
 import { FormField } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import FormErrorMessage from './FormErrorMessage';
 
 const MyDateInput = ({ label, ...props }) => {
   const { setFieldValue } = useFormikContext();
@@ -16,9 +17,7 @@ const MyDateInput = ({ label, ...props }) => {
         selected={(field.value && new Date(field.value)) || null}
         onChange={(value) => setFieldValue(field.name, value)}
       />
-      {meta.touched && meta.error && (
-        <div style={{ color: '#db2828', marginTop: '5px' }}>*{meta.error}</div>
-      )}
+      {meta.touched && meta.error && <FormErrorMessage errorMsg={meta.error} />}
     </FormField>
   );
 };
