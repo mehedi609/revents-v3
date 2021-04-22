@@ -26,7 +26,8 @@
     "google-map-react": "^2.1.9",
     "redux-devtools-extension": "^2.13.9",
     "react-toastify": "6.2.0",
-    "react-calendar": "^3.4.0"
+    "react-calendar": "^3.4.0",
+    "firebase": "^8.4.1"
   },
   "devDependencies": {
     "prettier": "^2.2.1"

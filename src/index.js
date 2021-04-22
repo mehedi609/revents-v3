@@ -12,9 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'react-calendar/dist/Calendar.css';
 import './app/layout/styles.css';
 
-import { loadEvents } from './features/events/eventActions';
-
-store.dispatch(loadEvents());
+// import { loadEvents } from './features/events/eventActions';
 
 const rootEl = document.getElementById('root');
 
