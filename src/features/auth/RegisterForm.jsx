@@ -3,10 +3,11 @@ import ModalWrapper from '../../app/common/modals/ModalWrapper';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import MyTextInput from '../../app/common/form/MyTextInput';
-import { Button, Label } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 import { useDispatch } from 'react-redux';
 import { closeModal } from '../../app/common/modals/modalReducer';
 import { registerInFirebase } from '../../app/firestore/firebaseService';
+import FormErrorMessage from '../../app/common/form/FormErrorMessage';
 
 export default function RegisterForm() {
   const dispatch = useDispatch();
@@ -41,12 +42,7 @@ export default function RegisterForm() {
               type="password"
             />
             {errors.auth && (
-              <Label
-                basic
-                color="red"
-                style={{ marginBottom: 10 }}
-                content={errors.auth}
-              />
+              <FormErrorMessage errorMsg={errors.auth} style={true} />
             )}
             <Button
               loading={isSubmitting}

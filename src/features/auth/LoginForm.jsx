@@ -7,6 +7,7 @@ import { Button } from 'semantic-ui-react';
 import { useDispatch } from 'react-redux';
 import { closeModal } from '../../app/common/modals/modalReducer';
 import { signInWithEmail } from '../../app/firestore/firebaseService';
+import FormErrorMessage from '../../app/common/form/FormErrorMessage';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -19,17 +20,18 @@ export default function LoginForm() {
           email: Yup.string().required().email(),
           password: Yup.string().required(),
         })}
-        onSubmit={async (values, { setSubmitting }) => {
+        onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
             await signInWithEmail(values);
             dispatch(closeModal());
           } catch (e) {
+            setErrors({ auth: 'Email or Password is Invalid!' });
             console.log(e);
           }
           setSubmitting(false);
         }}
       >
-        {({ isSubmitting, isValid, dirty }) => (
+        {({ isSubmitting, isValid, dirty, errors }) => (
           <Form className="ui form">
             <MyTextInput name="email" placeholder="Email Address" />
             <MyTextInput
@@ -37,6 +39,9 @@ export default function LoginForm() {
               placeholder="Password"
               type="password"
             />
+            {errors.auth && (
+              <FormErrorMessage errorMsg={errors.auth} style={true} />
+            )}
             <Button
               loading={isSubmitting}
               disabled={!isValid || !dirty || isSubmitting}
