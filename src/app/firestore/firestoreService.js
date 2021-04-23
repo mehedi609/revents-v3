@@ -58,3 +58,11 @@ export const cancelEventToggle = (event) => {
     isCancelled: !event.isCancelled,
   });
 };
+
+export function setUserProfileData(user) {
+  return db.collection('users').doc(user.uid).set({
+    displayName: user.displayName,
+    email: user.email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+}
