@@ -1,6 +1,6 @@
 /* global google */
-import React from 'react';
-import { Button, Header, Segment } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Button, Confirm, Header, Segment } from 'semantic-ui-react';
 import { Link, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
@@ -15,26 +15,17 @@ import MyPlaceInput from '../../../app/common/form/MyPlaceInput';
 import { useFirestoreDoc } from '../../../app/hooks/useFirestoreDoc';
 import {
   addEventToFirestore,
+  cancelEventToggle,
   listenToEventFromFirestore,
   updateEventInFirestore,
 } from '../../../app/firestore/firestoreService';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { toast } from 'react-toastify';
 
-const ValidationSchema = Yup.object().shape({
-  title: Yup.string().required('You must provide a title'),
-  category: Yup.string().required('You must select a category'),
-  description: Yup.string().required(),
-  city: Yup.object().shape({
-    address: Yup.string().required('City is required'),
-  }),
-  venue: Yup.object().shape({
-    address: Yup.string().required('Venue is required'),
-  }),
-  date: Yup.string().required(),
-});
-
 const EventForm = ({ match, history }) => {
+  const [loadingCancel, setLoadingCancel] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const selectedEvent = useSelector((state) =>
     state.event.events.find((evt) => evt.id === match.params.id),
   );
@@ -55,6 +46,19 @@ const EventForm = ({ match, history }) => {
     description: '',
     title: '',
   };
+
+  const ValidationSchema = Yup.object().shape({
+    title: Yup.string().required('You must provide a title'),
+    category: Yup.string().required('You must select a category'),
+    description: Yup.string().required(),
+    city: Yup.object().shape({
+      address: Yup.string().required('City is required'),
+    }),
+    venue: Yup.object().shape({
+      address: Yup.string().required('Venue is required'),
+    }),
+    date: Yup.string().required(),
+  });
 
   useFirestoreDoc({
     shouldExecute: !!match.params.id,
@@ -79,6 +83,17 @@ const EventForm = ({ match, history }) => {
       toast.error(e.message);
       setSubmitting(false);
     }
+  };
+
+  const handleCancelToggle = async (event) => {
+    setConfirmOpen(false);
+    setLoadingCancel(true);
+    try {
+      await cancelEventToggle(event);
+    } catch (e) {
+      toast.error(e.message);
+    }
+    setLoadingCancel(false);
   };
 
   return (
@@ -132,6 +147,22 @@ const EventForm = ({ match, history }) => {
                 dateFormat="MMMM d, yyyy h:mm a"
               />
 
+              {selectedEvent && (
+                <Button
+                  loading={loadingCancel}
+                  type="button"
+                  floated="left"
+                  color={selectedEvent.isCancelled ? 'green' : 'red'}
+                  content={
+                    selectedEvent.isCancelled
+                      ? 'Reactivate event'
+                      : 'Cancel Event'
+                  }
+                  // onClick={() => cancelEventToggle(selectedEvent)}
+                  onClick={() => setConfirmOpen(true)}
+                />
+              )}
+
               <Button
                 loading={isSubmitting}
                 disabled={!isValid || !dirty || isSubmitting}
@@ -151,6 +182,16 @@ const EventForm = ({ match, history }) => {
             </Form>
           )}
         </Formik>
+        <Confirm
+          content={
+            selectedEvent?.isCancelled
+              ? 'This will reactivate the event - are you sure?'
+              : 'This will cancel the event - are you sure?'
+          }
+          open={confirmOpen}
+          onCancel={() => setConfirmOpen(false)}
+          onConfirm={() => handleCancelToggle(selectedEvent)}
+        />
       </Segment>
     </>
   );
