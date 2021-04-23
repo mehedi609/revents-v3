@@ -1,5 +1,6 @@
 import firebase from 'firebase';
 import { setUserProfileData } from './firestoreService';
+import { toast } from 'react-toastify';
 
 export function signInWithEmail(creds) {
   return firebase
@@ -18,5 +19,24 @@ export async function registerInFirebase(creds) {
     return await setUserProfileData(result.user);
   } catch (e) {
     throw e;
+  }
+}
+
+export async function socialLogin(selectedProvider) {
+  let provider;
+  if (selectedProvider === 'facebook')
+    provider = new firebase.auth.FacebookAuthProvider();
+
+  if (selectedProvider === 'google')
+    provider = new firebase.auth.GoogleAuthProvider();
+
+  try {
+    const result = await firebase.auth().signInWithPopup(provider);
+    console.log(result);
+    if (result.additionalUserInfo.isNewUser) {
+      return await setUserProfileData(result.user);
+    }
+  } catch (e) {
+    toast.error(e.message);
   }
 }

@@ -2,11 +2,13 @@ import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { useDispatch } from 'react-redux';
 import { closeModal } from '../../app/common/modals/modalReducer';
+import { socialLogin } from '../../app/firestore/firebaseService';
 
 export default function SocialLogin() {
   const dispatch = useDispatch();
 
   function handleSocialLogin(provider) {
+    socialLogin(provider);
     dispatch(closeModal());
   }
 
