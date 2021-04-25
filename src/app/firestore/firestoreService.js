@@ -24,6 +24,14 @@ export function dataFromSnapshot(snapshot) {
   };
 }
 
+function getUsersCollection() {
+  return db.collection('users');
+}
+
+function getEventsCollection() {
+  return db.collection('events');
+}
+
 export const listenToEventsFromFirestore = () => {
   return db.collection('events').orderBy('date');
 };
@@ -70,3 +78,7 @@ export function setUserProfileData(user) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 }
+
+export const getUserProfile = (userId) => {
+  return db.collection('users').doc(userId);
+};
