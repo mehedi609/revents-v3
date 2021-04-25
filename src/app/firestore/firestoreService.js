@@ -24,13 +24,9 @@ export function dataFromSnapshot(snapshot) {
   };
 }
 
-function getUsersCollection() {
-  return db.collection('users');
-}
+const usersRef = db.collection('users');
 
-function getEventsCollection() {
-  return db.collection('events');
-}
+const eventsRef = db.collection('events');
 
 export const listenToEventsFromFirestore = () => {
   return db.collection('events').orderBy('date');
@@ -82,3 +78,17 @@ export function setUserProfileData(user) {
 export const getUserProfile = (userId) => {
   return db.collection('users').doc(userId);
 };
+
+export async function updateUserProfile(profile) {
+  const user = firebase.auth().currentUser;
+  try {
+    if (user && user.displayName === profile.displayName) {
+      await user.updateProfile({
+        displayName: profile.displayName,
+      });
+    }
+    return await usersRef.doc(user.uid).update(profile);
+  } catch (e) {
+    throw e;
+  }
+}

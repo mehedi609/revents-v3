@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tab } from 'semantic-ui-react';
+import AboutTab from './AboutTab';
 /*import AboutTab from './AboutTab';
 import PhotosTab from './PhotosTab';
 import EventsTab from './EventsTab';
@@ -8,7 +9,12 @@ import FollowingTab from './FollowingTab';*/
 export default function ProfileContent({ profile, isCurrentUser }) {
   const [activeTab, setActiveTab] = useState(0);
   const panes = [
-    { menuItem: 'About', render: () => <Tab.Pane>About User</Tab.Pane> },
+    {
+      menuItem: 'About',
+      render: () => (
+        <AboutTab profile={profile} isCurrentUser={isCurrentUser} />
+      ),
+    },
     { menuItem: 'Photos', render: () => <Tab.Pane>Photos</Tab.Pane> },
     { menuItem: 'Events', render: () => <Tab.Pane>Events</Tab.Pane> },
     { menuItem: 'Followers', render: () => <Tab.Pane>Followers</Tab.Pane> },
