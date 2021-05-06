@@ -3,12 +3,14 @@ import { Button, Card, Grid, Header, Image, Tab } from 'semantic-ui-react';
 import PhotoUploadWidget from '../../../app/common/photos/PhotoUploadWidget';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFirestoreCollection } from '../../../app/hooks/useFirestoreCollection';
-import { getUserPhoto } from '../../../app/firestore/firestoreService';
+import { getUserPhoto, setMainPhoto } from '../../../app/firestore/firestoreService';
 import { listenToUserPhotos } from '../profileActions';
+import { toast } from 'react-toastify';
 
 const PhotosTab = ({ profile, isCurrentUser }) => {
   const dispatch = useDispatch();
   const [editMode, setEditMode] = useState(false);
+  const [updating, setUpdating] = useState({ isUpdating: false, target: null });
   const { loading } = useSelector((state) => state.async);
   const { photos }  = useSelector((state) => state.profile)
 
@@ -17,6 +19,17 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
     data: (data) => dispatch(listenToUserPhotos(data)),
     deps: [profile.id, dispatch]
   })
+
+  async function setMainPhotoHandler(photo, target) {
+    setUpdating({isUpdating: true, target})
+    try {
+      await setMainPhoto(photo);
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setUpdating({ isUpdating: false, target: null })
+    }
+  }
 
   /*useEffect(() => {
     dispatch(asyncActionStart());
@@ -60,10 +73,8 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
                     <Button.Group fluid widths={2}>
                       <Button
                         name={photo.id}
-                        /*loading={
-                            updating.isUpdating && updating.target === photo.id
-                          }*/
-                        onClick={(e) => console.log('photo, e.target.name')}
+                        loading={updating.isUpdating && updating.target === photo.id}
+                        onClick={(e) => setMainPhotoHandler(photo, e.target.name)}
                         // disabled={`photo.url === profile.photoURL`}
                         basic
                         color="green"
