@@ -112,3 +112,7 @@ export async function updateUserProfilePhoto(downloadURL, filename) {
     throw e;
   }
 }
+
+export function getUserPhoto(userId) {
+  return getUserProfile(userId).collection('photos')
+}
