@@ -3,7 +3,7 @@ import { Button, Card, Grid, Header, Image, Tab } from 'semantic-ui-react';
 import PhotoUploadWidget from '../../../app/common/photos/PhotoUploadWidget';
 
 const PhotosTab = ({ profile, isCurrentUser }) => {
-  const [editMode, setEditMode] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   return (
     <>
       <Tab.Pane>
@@ -22,7 +22,7 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
 
           <Grid.Column width={16}>
             {editMode ? (
-              <PhotoUploadWidget />
+              <PhotoUploadWidget setEditMode={setEditMode}/>
             ) : (
               <>
                 <Card.Group itemsPerRow={5}>
@@ -36,7 +36,7 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
                             updating.isUpdating && updating.target === photo.id
                           }*/
                         onClick={(e) => console.log('photo, e.target.name')}
-                        disabled={`photo.url === profile.photoURL`}
+                        // disabled={`photo.url === profile.photoURL`}
                         basic
                         color="green"
                         content="Main"
@@ -45,7 +45,7 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
                         name={`photo.id`}
                         onClick={(e) => console.log('onClick')}
                         // loading={deleting.isDeleting && deleting.target === photo.id}
-                        disabled={`photo.url === profile.photoURL`}
+                        // disabled={`photo.url === profile.photoURL`}
                         basic
                         color="red"
                         icon="trash"

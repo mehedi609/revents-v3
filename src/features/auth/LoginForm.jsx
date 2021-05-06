@@ -41,7 +41,7 @@ export default function LoginForm() {
               type="password"
             />
             {errors.auth && (
-              <FormErrorMessage errorMsg={errors.auth} style={true} />
+              <FormErrorMessage errorMsg={errors.auth} _style={true} />
             )}
             <Button
               loading={isSubmitting}

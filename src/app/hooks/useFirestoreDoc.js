@@ -41,5 +41,6 @@ export const useFirestoreDoc = ({
     return () => {
       unsubscribe();
     };
+    // eslint-disable-next-line
   }, deps);
 };

@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useFirestoreDoc } from '../../../app/hooks/useFirestoreDoc';
 import {
-  listenToCurrentUserProfile,
   listenToSelectedUserProfile,
 } from '../profileActions';
 import { getUserProfile } from '../../../app/firestore/firestoreService';

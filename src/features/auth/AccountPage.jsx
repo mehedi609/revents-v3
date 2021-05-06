@@ -50,7 +50,7 @@ export default function AccountPage() {
                   placeholder="Confirm Password"
                 />
                 {errors.auth && (
-                  <FormErrorMessage errorMsg={errors.auth} style={true} />
+                  <FormErrorMessage errorMsg={errors.auth} _style={true} />
                 )}
                 <Button
                   style={{ display: 'block' }}

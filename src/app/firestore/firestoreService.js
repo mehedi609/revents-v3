@@ -26,7 +26,7 @@ export function dataFromSnapshot(snapshot) {
 
 const usersRef = db.collection('users');
 
-const eventsRef = db.collection('events');
+// const eventsRef = db.collection('events');
 
 export const listenToEventsFromFirestore = () => {
   return db.collection('events').orderBy('date');

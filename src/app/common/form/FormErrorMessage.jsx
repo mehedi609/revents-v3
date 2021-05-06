@@ -1,12 +1,12 @@
 import React from 'react';
 
-const FormErrorMessage = ({ errorMsg, style = false }) => {
+const FormErrorMessage = ({ errorMsg, _style = false }) => {
   return (
     <div
       style={{
         color: '#db2828',
         marginTop: '5px',
-        marginBottom: `${style ? '10px' : ''}`,
+        marginBottom: `${_style ? '10px' : ''}`,
       }}
     >
       *{errorMsg}

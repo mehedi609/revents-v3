@@ -2,11 +2,43 @@ import React, { useState } from 'react';
 import { Button, Grid, Header } from 'semantic-ui-react';
 import PhotoWidgetDropzone from './PhotoWidgetDropzone';
 import PhotoWidgetCropper from './PhotoWidgetCropper';
+import { getFileExtension } from '../util/util';
+import { uploadToFirebaseStorage } from '../../firestore/firebaseService';
+import { updateUserProfilePhoto } from '../../firestore/firestoreService';
+import { toast } from 'react-toastify';
+import cuid from 'cuid';
 
-const PhotoUploadWidget = () => {
+const PhotoUploadWidget = ({setEditMode}) => {
   const [files, setFiles] = useState([]);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  function handleUploadImage() {
+    setLoading(true);
+    const filename = cuid() + '.' + getFileExtension(files[0].name);
+    const uploadTask = uploadToFirebaseStorage(image, filename);
+    uploadTask.on('state_changed', snapshot => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+    }, error => {
+      toast.error(error.messege);
+    }, () => {
+      uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+        updateUserProfilePhoto(downloadURL, filename).then(() => {
+          handleCancelCrop();
+          setEditMode(false);
+        }).catch(error => {
+          toast.error(error.message);
+        });
+        setLoading(false);
+      })
+    })
+  }
+
+  function handleCancelCrop() {
+    setFiles([]);
+    setImage(null);
+  }
 
   return (
     <>
@@ -35,8 +67,8 @@ const PhotoUploadWidget = () => {
                 style={{ minHeight: 200, minWidth: 200, overflow: 'hidden' }}
               />
               <Button.Group>
-                {/*<Button loading={loading} onClick={handleUploadImage} style={{ width: 100 }} positive icon='check' />*/}
-                {/*<Button disabled={loading} onClick={handleCancelCrop} style={{ width: 100 }} icon='close' />*/}
+                <Button loading={loading} onClick={handleUploadImage} style={{ width: 100 }} positive icon='check' />
+                <Button disabled={loading} onClick={handleCancelCrop} style={{ width: 100 }} icon='close' />
               </Button.Group>
             </>
           )}

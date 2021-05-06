@@ -7,7 +7,7 @@ import FormErrorMessage from './FormErrorMessage';
 
 const MyDateInput = ({ label, ...props }) => {
   const { setFieldValue } = useFormikContext();
-  const [field, meta, helpers] = useField(props);
+  const [field, meta] = useField(props);
   return (
     <FormField error={meta.touched && !!meta.error} style={{ width: '25%' }}>
       <label>{label}</label>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useField } from 'formik';
-import { FormField, Label, Segment, List } from 'semantic-ui-react';
+import { FormField, Segment, List } from 'semantic-ui-react';
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
