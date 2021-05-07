@@ -24,7 +24,6 @@ export function dataFromSnapshot(snapshot) {
 }
 
 const usersCollectionRef = db.collection('users');
-
 const eventsCollectionRef = db.collection('events');
 
 export const listenToEventsFromFirestore = (predicate) => {
@@ -177,5 +176,26 @@ export async function cancelUserAttendance(event) {
     });
   } catch (e) {
     throw e;
+  }
+}
+
+export function getUserEventsQuery(activeTab, userUid) {
+  const today = new Date();
+
+  switch (activeTab) {
+    case 1: // past events
+      return eventsCollectionRef
+        .where('attendeeIds', 'array-contains', userUid)
+        .where('date', '<=', today)
+        .orderBy('date', 'desc');
+    case 2: // hosting
+      return eventsCollectionRef
+        .where('hostUid', '==', userUid)
+        .orderBy('date');
+    default:
+      return eventsCollectionRef
+        .where('attendeeIds', 'array-contains', userUid)
+        .where('date', '>=', today)
+        .orderBy('date');
   }
 }

@@ -1,9 +1,24 @@
 import React, { useState } from 'react';
 import { Card, Grid, Header, Image, Tab } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { format } from 'date-fns';
+import { useFirestoreCollection } from '../../../app/hooks/useFirestoreCollection';
+import { getUserEventsQuery } from '../../../app/firestore/firestoreService';
+import { listenToUserEvents } from '../profileActions';
 
-const EventsTab = () => {
+const EventsTab = ({ profile }) => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState(0);
+  const { profileEvents } = useSelector((state) => state.profile);
+  const { loading } = useSelector((state) => state.async);
+
+  useFirestoreCollection({
+    query: () => getUserEventsQuery(activeTab, profile.id),
+    data: (payload) => dispatch(listenToUserEvents(payload)),
+    deps: [dispatch, activeTab, profile.id],
+  });
+
   const panes = [
     { menuItem: 'Future Events', pane: { key: 'future' } },
     { menuItem: 'Past Events', pane: { key: 'past' } },
@@ -12,7 +27,7 @@ const EventsTab = () => {
 
   return (
     <>
-      <Tab.Pane>
+      <Tab.Pane loading={loading}>
         <Grid>
           <Grid.Column width={16}>
             <Header floated="left" icon="calendar" content="Events" />
@@ -26,19 +41,21 @@ const EventsTab = () => {
             />
 
             <Card.Group itemsPerRow={5} style={{ marginTop: 10 }}>
-              <Card as={Link} to={`/events/}`}>
-                <Image
-                  src={`/assets/categoryImages/drinks.jpg`}
-                  style={{ minHeight: 100, objectFit: 'cover' }}
-                />
-                <Card.Content>
-                  <Card.Header content={`title`} textAlign="center" />
-                  <Card.Meta textAlign="center">
-                    <div>date</div>
-                    <div>time</div>
-                  </Card.Meta>
-                </Card.Content>
-              </Card>
+              {profileEvents.map((event) => (
+                <Card as={Link} to={`/events/${event.id}`} key={event.id}>
+                  <Image
+                    src={`/assets/categoryImages/${event.category}.jpg`}
+                    style={{ minHeight: 100, objectFit: 'cover' }}
+                  />
+                  <Card.Content>
+                    <Card.Header content={event.title} textAlign="center" />
+                    <Card.Meta textAlign="center">
+                      <div>{format(event.date, 'dd MMM yyyy')}</div>
+                      <div>{format(event.date, 'hh:mm a')}</div>
+                    </Card.Meta>
+                  </Card.Content>
+                </Card>
+              ))}
             </Card.Group>
           </Grid.Column>
         </Grid>
