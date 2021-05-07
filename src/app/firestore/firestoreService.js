@@ -1,5 +1,4 @@
 import firebase from '../config/firebase';
-import cuid from 'cuid';
 
 const db = firebase.firestore();
 
@@ -24,9 +23,9 @@ export function dataFromSnapshot(snapshot) {
   };
 }
 
-const usersRef = db.collection('users');
+const usersCollectionRef = db.collection('users');
 
-// const eventsRef = db.collection('events');
+const eventsCollectionRef = db.collection('events');
 
 export const listenToEventsFromFirestore = () => {
   return db.collection('events').orderBy('date');
@@ -37,24 +36,28 @@ export const listenToEventFromFirestore = (eventId) => {
 };
 
 export const addEventToFirestore = (event) => {
-  return db.collection('events').add({
+  const user = firebase.auth().currentUser;
+
+  return eventsCollectionRef.add({
     ...event,
-    hostedBy: 'Akhi',
-    hostPhotoURL: 'https://randomuser.me/api/portraits/women/20.jpg',
+    hostUid: user.uid,
+    hostedBy: user.displayName,
+    hostPhotoURL: user.photoURL || null,
     attendees: firebase.firestore.FieldValue.arrayUnion({
-      id: cuid(),
-      name: 'Akhi',
-      photoURL: 'https://randomuser.me/api/portraits/women/20.jpg',
+      id: user.uid,
+      name: user.displayName,
+      photoURL:  user.photoURL || null,
     }),
+    attendeeIds: firebase.firestore.FieldValue.arrayUnion(user.uid)
   });
 };
 
 export const updateEventInFirestore = (event) => {
-  return db.collection('events').doc(event.id).update(event);
+  return eventsCollectionRef.doc(event.id).update(event);
 };
 
 export const deleteEventInFirestore = (eventId) => {
-  return db.collection('events').doc(eventId).delete();
+  return eventsCollectionRef.doc(eventId).delete();
 };
 
 export const cancelEventToggle = (event) => {
@@ -87,7 +90,7 @@ export async function updateUserProfile(profile) {
         displayName: profile.displayName,
       });
     }
-    return await usersRef.doc(user.uid).update(profile);
+    return await usersCollectionRef.doc(user.uid).update(profile);
   } catch (e) {
     throw e;
   }
@@ -95,7 +98,7 @@ export async function updateUserProfile(profile) {
 
 export async function updateUserProfilePhoto(downloadURL, filename) {
   const user = firebase.auth().currentUser;
-  const userDocRef = usersRef.doc(user.uid);
+  const userDocRef = usersCollectionRef.doc(user.uid);
 
   try {
     const userDoc = await userDocRef.get();

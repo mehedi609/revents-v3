@@ -16,7 +16,7 @@ const eventImageTextStyle = {
   color: 'white',
 };
 
-const EventDetailedHeader = ({ event }) => {
+const EventDetailedHeader = ({ event, isGoing, isHosting }) => {
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: '0' }}>
@@ -45,18 +45,27 @@ const EventDetailedHeader = ({ event }) => {
         </Segment>
       </Segment>
 
-      <Segment attached="bottom">
-        <Button>Cancel My Place</Button>
-        <Button color="teal">JOIN THIS EVENT</Button>
+      <Segment attached="bottom" clearing>
+        {!isHosting && (
+          <>
+            {isGoing ? (
+              <Button>Cancel My Place</Button>
+            ) : (
+              <Button color="teal">JOIN THIS EVENT</Button>
+            )}
+          </>
+        )}
 
-        <Button
-          as={Link}
-          to={`/manage/${event.id}`}
-          color="orange"
-          floated="right"
-        >
-          Manage Event
-        </Button>
+        {isHosting && (
+          <Button
+            as={Link}
+            to={`/manage/${event.id}`}
+            color="orange"
+            floated="right"
+          >
+            Manage Event
+          </Button>
+        )}
       </Segment>
     </Segment.Group>
   );

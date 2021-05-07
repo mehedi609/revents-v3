@@ -14,7 +14,7 @@ import './app/layout/styles.css';
 
 // import { loadEvents } from './features/events/eventActions';
 
-const rootEl = document.getElementById('root');
+/*const rootEl = document.getElementById('root');
 
 function render() {
   ReactDOM.render(
@@ -34,14 +34,17 @@ if (module.hot) {
   });
 }
 
-render();
+render();*/
 
-/*ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <ScrollToTop />
+      <App />
+    </BrowserRouter>
+  </Provider>,
   document.getElementById('root'),
-);*/
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
