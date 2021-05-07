@@ -27,8 +27,22 @@ const usersCollectionRef = db.collection('users');
 
 const eventsCollectionRef = db.collection('events');
 
-export const listenToEventsFromFirestore = () => {
-  return db.collection('events').orderBy('date');
+export const listenToEventsFromFirestore = (predicate) => {
+  const user = firebase.auth().currentUser;
+  let eventsRef = db.collection('events').orderBy('date');
+
+  switch (predicate.get('filter')) {
+    case 'isGoing':
+      return eventsRef
+        .where('attendeeIds', 'array-contains', user.uid)
+        .where('date', '>=', predicate.get('startDate'));
+    case 'isHosting':
+      return eventsRef
+        .where('hostUid', '==', user.uid)
+        .where('date', '>=', predicate.get('startDate'));
+    default:
+      return eventsRef.where('date', '>=', predicate.get('startDate'));
+  }
 };
 
 export const listenToEventFromFirestore = (eventId) => {
