@@ -46,9 +46,9 @@ export const addEventToFirestore = (event) => {
     attendees: firebase.firestore.FieldValue.arrayUnion({
       id: user.uid,
       name: user.displayName,
-      photoURL:  user.photoURL || null,
+      photoURL: user.photoURL || null,
     }),
-    attendeeIds: firebase.firestore.FieldValue.arrayUnion(user.uid)
+    attendeeIds: firebase.firestore.FieldValue.arrayUnion(user.uid),
   });
 };
 
@@ -119,7 +119,7 @@ export async function updateUserProfilePhoto(downloadURL, filename) {
 // const user = firebase.auth().currentUser;
 
 export function getUserPhoto(userId) {
-  return getUserProfile(userId).collection('photos')
+  return getUserProfile(userId).collection('photos');
 }
 
 export async function setMainPhoto(photo) {
@@ -134,5 +134,34 @@ export async function setMainPhoto(photo) {
 
 export function deletePhotoFromCollection(photoId) {
   const user = firebase.auth().currentUser;
-  return getUserProfile(user.uid).collection('photos').doc(photoId).delete()
+  return getUserProfile(user.uid).collection('photos').doc(photoId).delete();
+}
+
+export function addUserAttendance(event) {
+  const user = firebase.auth().currentUser;
+  return eventsCollectionRef.doc(event.id).update({
+    attendees: firebase.firestore.FieldValue.arrayUnion({
+      id: user.uid,
+      name: user.displayName,
+      photoURL: user.photoURL || null,
+    }),
+    attendeeIds: firebase.firestore.FieldValue.arrayUnion(user.uid),
+  });
+}
+
+export async function cancelUserAttendance(event) {
+  const user = firebase.auth().currentUser;
+  const eventDocRef = eventsCollectionRef.doc(event.id);
+  try {
+    const eventDoc = await eventDocRef.get();
+    const updatedAttendees = eventDoc.exists
+      ? eventDoc.data().attendees.filter((a) => a.id !== user.uid)
+      : [];
+    return eventDocRef.update({
+      attendees: updatedAttendees,
+      attendeeIds: firebase.firestore.FieldValue.arrayRemove(user.uid),
+    });
+  } catch (e) {
+    throw e;
+  }
 }
