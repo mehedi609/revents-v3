@@ -113,6 +113,8 @@ export async function updateUserProfilePhoto(downloadURL, filename) {
   }
 }
 
+// const user = firebase.auth().currentUser;
+
 export function getUserPhoto(userId) {
   return getUserProfile(userId).collection('photos')
 }
@@ -125,4 +127,9 @@ export async function setMainPhoto(photo) {
   } catch (e) {
     throw e;
   }
+}
+
+export function deletePhotoFromCollection(photoId) {
+  const user = firebase.auth().currentUser;
+  return getUserProfile(user.uid).collection('photos').doc(photoId).delete()
 }

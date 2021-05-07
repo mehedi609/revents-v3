@@ -41,6 +41,9 @@ export async function socialLogin(selectedProvider) {
   }
 }
 
+// const storageRef = firebase.storage().ref();
+// const user = firebase.auth().currentUser;
+
 export function updateUserPassword(creds) {
   const user = firebase.auth().currentUser;
   return user.updatePassword(creds.newPassword1);
@@ -50,4 +53,10 @@ export function uploadToFirebaseStorage(file, filename) {
   const user = firebase.auth().currentUser;
   const storageRef = firebase.storage().ref();
   return storageRef.child(`${user.uid}/user_images/${filename}`).put(file);
+}
+
+export function deletePhotoFromFirebaseStorage(photo) {
+  const user = firebase.auth().currentUser;
+  const storageRef = firebase.storage().ref();
+  return storageRef.child(`${user.uid}/user_images/${photo.name}`).delete();
 }

@@ -67,7 +67,7 @@ export default function ProfileContent({ profile, isCurrentUser }) {
       menu={{ fluid: true, vertical: true }}
       menuPosition="right"
       panes={panes}
-      activeIndex={1}
+      // activeIndex={1}
       // onTabChange={(e, data) => setActiveTab(data.activeIndex)}
     />
   );

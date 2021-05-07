@@ -3,14 +3,16 @@ import { Button, Card, Grid, Header, Image, Tab } from 'semantic-ui-react';
 import PhotoUploadWidget from '../../../app/common/photos/PhotoUploadWidget';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFirestoreCollection } from '../../../app/hooks/useFirestoreCollection';
-import { getUserPhoto, setMainPhoto } from '../../../app/firestore/firestoreService';
+import { deletePhotoFromCollection, getUserPhoto, setMainPhoto } from '../../../app/firestore/firestoreService';
 import { listenToUserPhotos } from '../profileActions';
 import { toast } from 'react-toastify';
+import { deletePhotoFromFirebaseStorage } from '../../../app/firestore/firebaseService';
 
 const PhotosTab = ({ profile, isCurrentUser }) => {
   const dispatch = useDispatch();
   const [editMode, setEditMode] = useState(false);
   const [updating, setUpdating] = useState({ isUpdating: false, target: null });
+  const [deleting, setDeleting] = useState({ isDeleting: false, target: null });
   const { loading } = useSelector((state) => state.async);
   const { photos }  = useSelector((state) => state.profile)
 
@@ -21,13 +23,25 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
   })
 
   async function setMainPhotoHandler(photo, target) {
-    setUpdating({isUpdating: true, target})
+    setUpdating({ isUpdating: true, target })
     try {
       await setMainPhoto(photo);
     } catch (e) {
       toast.error(e.message);
     } finally {
       setUpdating({ isUpdating: false, target: null })
+    }
+  }
+
+  async function deletePhotoHandler(photo, target) {
+    setDeleting({ isDeleting: true, target });
+    try {
+      await deletePhotoFromFirebaseStorage(photo);
+      await deletePhotoFromCollection(photo.id);
+    } catch (e) {
+      toast.error(e.message)
+    } finally {
+      setDeleting({ isDeleting: false, target: null })
     }
   }
 
@@ -75,16 +89,16 @@ const PhotosTab = ({ profile, isCurrentUser }) => {
                         name={photo.id}
                         loading={updating.isUpdating && updating.target === photo.id}
                         onClick={(e) => setMainPhotoHandler(photo, e.target.name)}
-                        // disabled={`photo.url === profile.photoURL`}
+                        disabled={photo.url === profile.photoURL}
                         basic
                         color="green"
                         content="Main"
                       />
                       <Button
                         name={photo.id}
-                        onClick={(e) => console.log('onClick')}
-                        // loading={deleting.isDeleting && deleting.target === photo.id}
-                        // disabled={`photo.url === profile.photoURL`}
+                        loading={deleting.isDeleting && deleting.target === photo.id}
+                        onClick={(e) => deletePhotoHandler(photo, e.target.name)}
+                        disabled={photo.url === profile.photoURL}
                         basic
                         color="red"
                         icon="trash"
