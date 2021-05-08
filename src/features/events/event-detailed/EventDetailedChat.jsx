@@ -7,7 +7,7 @@ import {
   firebaseObjectToArray,
   getEventChatRef,
 } from '../../../app/firestore/firebaseService';
-import { listenToEventChat } from '../eventActions';
+import { clearComments, listenToEventChat } from '../eventActions';
 import { Link } from 'react-router-dom';
 
 const EventDetailedChat = ({ eventId }) => {
@@ -21,6 +21,10 @@ const EventDetailedChat = ({ eventId }) => {
         listenToEventChat(firebaseObjectToArray(snapshot.val()).reverse()),
       );
     });
+    return () => {
+      dispatch(clearComments());
+      getEventChatRef().off();
+    };
   }, [eventId, dispatch]);
 
   return (

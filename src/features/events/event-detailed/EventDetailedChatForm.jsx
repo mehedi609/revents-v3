@@ -3,12 +3,16 @@ import { Form, Formik, Field } from 'formik';
 import { addEventChatComment } from '../../../app/firestore/firebaseService';
 import { toast } from 'react-toastify';
 import { Loader } from 'semantic-ui-react';
+import * as Yup from 'yup';
 
 const EventDetailedChatForm = ({ eventId }) => {
   return (
     <>
       <Formik
         initialValues={{ comment: '' }}
+        validationSchema={Yup.object({
+          comment: Yup.string().required(),
+        })}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
             await addEventChatComment(eventId, values.comment);
@@ -20,7 +24,7 @@ const EventDetailedChatForm = ({ eventId }) => {
           }
         }}
       >
-        {({ isSubmitting, handleSubmit }) => (
+        {({ isSubmitting, handleSubmit, isValid }) => (
           <Form className="ui form">
             <Field name="comment">
               {({ field }) => (
@@ -32,7 +36,10 @@ const EventDetailedChatForm = ({ eventId }) => {
                     placeholder="Enter your comment (Enter to submit, SHIFT + Enter for new line)"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && e.shiftKey) return;
-                      if (e.key === 'Enter' && !e.shiftKey) handleSubmit();
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        isValid && handleSubmit();
+                      }
                     }}
                   />
                 </div>
