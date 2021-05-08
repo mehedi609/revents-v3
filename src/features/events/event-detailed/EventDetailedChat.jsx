@@ -9,6 +9,8 @@ import {
 } from '../../../app/firestore/firebaseService';
 import { clearComments, listenToEventChat } from '../eventActions';
 import { Link } from 'react-router-dom';
+import { createDataTree } from '../../../app/common/util/util';
+import DisplayComment from './DisplayComment';
 
 const EventDetailedChat = ({ eventId }) => {
   const dispatch = useDispatch();
@@ -48,43 +50,36 @@ const EventDetailedChat = ({ eventId }) => {
       </Segment>
 
       <Segment attached>
-        <EventDetailedChatForm eventId={eventId} parentId={0} />
+        <EventDetailedChatForm
+          eventId={eventId}
+          parentId={0}
+          setShowReplyForm={setShowReplyForm}
+        />
         <Comment.Group>
-          {comments.map((comment) => (
+          {createDataTree(comments).map((comment) => (
             <Comment key={comment.id}>
-              <Comment.Avatar src={comment.photoURL || '/assets/user.png'} />
-              <Comment.Content>
-                <Comment.Author as={Link} to={`/profiles/${comment.uid}`}>
-                  {comment.displayName}
-                </Comment.Author>
-                <Comment.Metadata>
-                  <div>{formatDistance(comment.date, new Date())}</div>
-                </Comment.Metadata>
-                <Comment.Text>
-                  {comment.text.split('\n').map((text, i) => (
-                    <span key={i}>
-                      {text} <br />
-                    </span>
-                  ))}
-                </Comment.Text>
-                <Comment.Actions>
-                  <Comment.Action
-                    onClick={() =>
-                      setShowReplyForm({ open: true, commentId: comment.id })
-                    }
-                  >
-                    Reply
-                  </Comment.Action>
-                  {showReplyForm.open &&
-                    showReplyForm.commentId === comment.id && (
-                      <EventDetailedChatForm
+              <DisplayComment
+                comment={comment}
+                eventId={eventId}
+                showReplyForm={showReplyForm}
+                setShowReplyForm={setShowReplyForm}
+                child={false}
+              />
+              {comment.childNodes.length > 0 && (
+                <Comment.Group>
+                  {comment.childNodes.reverse().map((child) => (
+                    <Comment key={child.id}>
+                      <DisplayComment
+                        comment={child}
                         eventId={eventId}
-                        parentId={comment.id}
-                        closeForm={handleCloseReplyForm}
+                        showReplyForm={showReplyForm}
+                        setShowReplyForm={setShowReplyForm}
+                        child={true}
                       />
-                    )}
-                </Comment.Actions>
-              </Comment.Content>
+                    </Comment>
+                  ))}
+                </Comment.Group>
+              )}
             </Comment>
           ))}
         </Comment.Group>

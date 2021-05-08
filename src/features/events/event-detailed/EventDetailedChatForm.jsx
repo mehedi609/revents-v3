@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Loader } from 'semantic-ui-react';
 import * as Yup from 'yup';
 
-const EventDetailedChatForm = ({ eventId, parentId, closeForm }) => {
+const EventDetailedChatForm = ({ eventId, parentId, setShowReplyForm }) => {
   return (
     <>
       <Formik
@@ -21,7 +21,10 @@ const EventDetailedChatForm = ({ eventId, parentId, closeForm }) => {
             toast.error(e.message);
           } finally {
             setSubmitting(false);
-            closeForm();
+            setShowReplyForm({
+              open: false,
+              commentId: null,
+            });
           }
         }}
       >
