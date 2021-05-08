@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Comment, Form, Header, Segment } from 'semantic-ui-react';
+import { Comment, Header, Segment } from 'semantic-ui-react';
+import EventDetailedChatForm from './EventDetailedChatForm';
 
-const EventDetailedChat = () => {
+const EventDetailedChat = ({ eventId }) => {
   return (
     <>
       <Segment
@@ -77,15 +78,7 @@ const EventDetailedChat = () => {
             </Comment.Content>
           </Comment>
 
-          <Form reply>
-            <Form.TextArea />
-            <Button
-              content="Add Reply"
-              labelPosition="left"
-              icon="edit"
-              primary
-            />
-          </Form>
+          <EventDetailedChatForm eventId={eventId} />
         </Comment.Group>
       </Segment>
     </>

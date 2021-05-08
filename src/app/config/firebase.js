@@ -7,6 +7,8 @@ import 'firebase/storage';
 const firebaseConfig = {
   apiKey: 'AIzaSyANEUT9XlJcjVu7x-XejpqsMSGkVTZnLKU',
   authDomain: 'reventscourse-4a376.firebaseapp.com',
+  databaseURL:
+    'https://reventscourse-4a376-default-rtdb.asia-southeast1.firebasedatabase.app/',
   projectId: 'reventscourse-4a376',
   storageBucket: 'reventscourse-4a376.appspot.com',
   messagingSenderId: '206302518318',
