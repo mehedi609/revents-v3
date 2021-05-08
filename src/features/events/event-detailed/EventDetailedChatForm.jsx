@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Loader } from 'semantic-ui-react';
 import * as Yup from 'yup';
 
-const EventDetailedChatForm = ({ eventId }) => {
+const EventDetailedChatForm = ({ eventId, parentId, closeForm }) => {
   return (
     <>
       <Formik
@@ -15,12 +15,13 @@ const EventDetailedChatForm = ({ eventId }) => {
         })}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
-            await addEventChatComment(eventId, values.comment);
+            await addEventChatComment(eventId, { ...values, parentId });
             resetForm();
           } catch (e) {
             toast.error(e.message);
           } finally {
             setSubmitting(false);
+            closeForm();
           }
         }}
       >

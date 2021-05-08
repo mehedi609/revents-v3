@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Comment, Header, Segment } from 'semantic-ui-react';
 import EventDetailedChatForm from './EventDetailedChatForm';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,14 @@ import { Link } from 'react-router-dom';
 const EventDetailedChat = ({ eventId }) => {
   const dispatch = useDispatch();
   const { comments } = useSelector((state) => state.event);
+  const [showReplyForm, setShowReplyForm] = useState({
+    open: false,
+    commentId: null,
+  });
+
+  function handleCloseReplyForm() {
+    setShowReplyForm({ open: false, commentId: null });
+  }
 
   useEffect(() => {
     getEventChatRef(eventId).on('value', (snapshot) => {
@@ -40,7 +48,7 @@ const EventDetailedChat = ({ eventId }) => {
       </Segment>
 
       <Segment attached>
-        <EventDetailedChatForm eventId={eventId} />
+        <EventDetailedChatForm eventId={eventId} parentId={0} />
         <Comment.Group>
           {comments.map((comment) => (
             <Comment key={comment.id}>
@@ -53,14 +61,28 @@ const EventDetailedChat = ({ eventId }) => {
                   <div>{formatDistance(comment.date, new Date())}</div>
                 </Comment.Metadata>
                 <Comment.Text>
-                  {comment.comment.split('\n').map((text, i) => (
+                  {comment.text.split('\n').map((text, i) => (
                     <span key={i}>
                       {text} <br />
                     </span>
                   ))}
                 </Comment.Text>
                 <Comment.Actions>
-                  <Comment.Action>Reply</Comment.Action>
+                  <Comment.Action
+                    onClick={() =>
+                      setShowReplyForm({ open: true, commentId: comment.id })
+                    }
+                  >
+                    Reply
+                  </Comment.Action>
+                  {showReplyForm.open &&
+                    showReplyForm.commentId === comment.id && (
+                      <EventDetailedChatForm
+                        eventId={eventId}
+                        parentId={comment.id}
+                        closeForm={handleCloseReplyForm}
+                      />
+                    )}
                 </Comment.Actions>
               </Comment.Content>
             </Comment>
